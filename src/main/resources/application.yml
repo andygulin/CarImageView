@@ -1,0 +1,18 @@
+spring:
+    http:
+        encoding:
+            charset: UTF-8
+            enabled: true
+            force: true
+    data:
+        mongodb:
+            database: photo
+            host: 192.168.209.128
+            port: 27017
+            repositories.enabled: true
+    mvc:
+        view:
+            prefix: /WEB-INF/jsp/
+            suffix: .jsp
+image:
+    domain: http://192.168.209.128/image/
