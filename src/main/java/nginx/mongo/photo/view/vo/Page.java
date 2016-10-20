@@ -1,102 +1,91 @@
 package nginx.mongo.photo.view.vo;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import java.io.Serializable;
+import java.util.List;
 
-public class Page {
+import org.springframework.util.CollectionUtils;
 
-	private String url = "";
-	private Integer pageNo = 1;
-	private Long count = 0L;
-	private Integer rowPerPage = 10;
-	private Integer showNum = 5;
-	private Integer totalPages = 0;
+public class Page<T> implements Serializable {
 
-	public String getUrl() {
-		return url;
+	private static final long serialVersionUID = 1807860901943556968L;
+
+	public static final int DEFAULT_PAGE_NO = 1;
+	public static final int DEFAULT_PAGE_SIZE = 10;
+
+	private int pageNo;
+	private int pageSize;
+	private List<T> result;
+	private long totalSize;
+
+	public static final <T> Page<T> build(List<T> result, Class<T> clazz, int pageNo, int pageSize, long totalSize) {
+		return new Page<T>(result, totalSize, pageNo, pageSize);
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public static final <T> Page<T> build(List<T> result, int pageNo, int pageSize, long totalSize) {
+		return new Page<T>(result, totalSize, pageNo, pageSize);
 	}
 
-	public Integer getPageNo() {
+	public static final <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize) {
+		return new Page<T>(result, totalSize, DEFAULT_PAGE_NO, DEFAULT_PAGE_SIZE);
+	}
+
+	public static final <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize, int pageNo) {
+		return new Page<T>(result, totalSize, pageNo, DEFAULT_PAGE_SIZE);
+	}
+
+	public Page(List<T> result, long totalSize, int pageNo, int pageSize) {
+		this.setPageNo(pageNo);
+		this.setPageSize(pageSize);
+		this.setResult(result);
+		this.setTotalSize(totalSize);
+	}
+
+	public int getPageNo() {
 		return pageNo;
 	}
 
-	public void setPageNo(Integer pageNo) {
-		this.pageNo = pageNo;
+	public int getPageSize() {
+		return pageSize;
 	}
 
-	public Long getCount() {
-		return count;
+	public List<T> getResult() {
+		return result;
 	}
 
-	public void setCount(Long count) {
-		this.count = count;
+	public long getTotalSize() {
+		return totalSize;
 	}
 
-	public Integer getRowPerPage() {
-		return rowPerPage;
+	public void setPageNo(int pageNo) {
+		this.pageNo = Math.max(DEFAULT_PAGE_NO, pageNo);
 	}
 
-	public void setRowPerPage(Integer rowPerPage) {
-		this.rowPerPage = rowPerPage;
+	public void setPageSize(int pageSize) {
+		this.pageSize = Math.max(1, pageSize);
 	}
 
-	public Integer getShowNum() {
-		return showNum;
+	public void setResult(List<T> result) {
+		this.result = result;
 	}
 
-	public void setShowNum(Integer showNum) {
-		this.showNum = showNum;
+	public void setTotalSize(long totalSize) {
+		this.totalSize = Math.max(0L, totalSize);
 	}
 
-	public Integer getTotalPages() {
-		return totalPages;
+	public int getTotalPage() {
+		return Long.valueOf(this.totalSize % this.pageSize == 0 ? this.totalSize / this.pageSize
+				: this.totalSize / this.pageSize + 1).intValue();
 	}
 
-	public void setTotalPages(Integer totalPages) {
-		this.totalPages = totalPages;
+	public int getStartIndex() {
+		return (this.pageNo - 1) * this.pageSize;
 	}
 
-	public String pageList() {
-		StringBuffer page = new StringBuffer();
-		int totalPages = (int) ((this.count + this.rowPerPage - 1) / this.rowPerPage);
-		int begin = Math.max(1, this.pageNo - this.showNum / 2);
-		int end = Math.min(begin + (this.showNum - 1), totalPages);
-		final int INDEX_NOT_FOUND = -1;
-		this.url = this.url.endsWith("?") ? this.url.substring(0, this.url.length() - 1) : this.url;
-		String linkChar = this.url.indexOf("?") != INDEX_NOT_FOUND ? "&" : "?";
-		this.url += linkChar;
-		page.append("<nav><ul class=\"pagination\">");
-		if (this.pageNo > 1) {
-			page.append("<li><a href=\"" + this.url + "page=1\">首页</a></li>");
-			page.append("<li><a href=\"" + this.url + "page=" + (this.pageNo - 1) + "\">上一页</a></li>");
-		} else {
-			page.append("<li class=\"disabled\"><a href=\"#\">首页</a></li>");
-			page.append("<li class=\"disabled\"><a href=\"#\">上一页</a></li>");
+	public int getEndIndex() {
+		int foo = this.getStartIndex();
+		if (!CollectionUtils.isEmpty(this.result)) {
+			foo += this.result.size();
 		}
-		for (int i = begin; i <= end; i++) {
-			if (i == this.pageNo) {
-				page.append("<li class=\"active\"><a href=\"" + this.url + "page=" + i + "\">" + i + "</a></li>");
-			} else {
-				page.append("<li><a href=\"" + this.url + "page=" + i + "\">" + i + "</a></li>");
-			}
-		}
-		if (this.pageNo < totalPages) {
-			page.append("<li><a href=\"" + this.url + "page=" + (this.pageNo + 1) + "\">下一页</a></li>");
-			page.append("<li><a href=\"" + this.url + "page=" + totalPages + "\">末页</a></li>");
-		} else {
-			page.append("<li class=\"disabled\"><a href=\"#\">下一页</a></li>");
-			page.append("<li class=\"disabled\"><a href=\"#\">末页</a></li>");
-		}
-		page.append("</ul></nav>");
-		return page.toString();
+		return foo;
 	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
-
 }

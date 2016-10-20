@@ -53,13 +53,13 @@ public class ImportPhoto implements Runnable {
 				object = parseObject(obj);
 				photo.setRemark(object.getString("remark"));
 				photo.setName(object.getString("name"));
-				photoService.insert(photo);
-				System.out.println("mongodb: " + file);
+				String id = photoService.insert(photo);
+				System.out.println("Store To MongoDB: " + id);
 
 				deleteQuietly(file);
 				deleteQuietly(remarkFile);
 			} else {
-				System.out.println(String.format("wait %sms , shutdown!", ParseConstants.WAIT_TIME));
+				System.out.println(String.format("Wait %sms , Shutdown Task...", ParseConstants.WAIT_TIME));
 				return;
 			}
 		}

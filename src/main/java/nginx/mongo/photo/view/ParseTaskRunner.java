@@ -1,6 +1,4 @@
-package nginx.mongo.photo.view.parse;
-
-import static java.util.concurrent.Executors.newCachedThreadPool;
+package nginx.mongo.photo.view;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,18 +6,21 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.collections4.ListUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 
+import nginx.mongo.photo.view.parse.ImportPhoto;
+import nginx.mongo.photo.view.parse.ParseConstants;
+import nginx.mongo.photo.view.parse.ParsePhoto;
+import nginx.mongo.photo.view.parse.WebVO;
 import nginx.mongo.photo.view.service.PhotoService;
 
-public class Application {
+public class ParseTaskRunner implements CommandLineRunner {
 
 	private static List<WebVO> webs = new ArrayList<>();
-	private static ApplicationContext context = null;
-	private static PhotoService photoService = null;
 
 	static {
 		webs.add(new WebVO("2196", "宝马M3"));
@@ -40,6 +41,7 @@ public class Application {
 		webs.add(new WebVO("2739", "奥迪S8"));
 		webs.add(new WebVO("2740", "奥迪TTS"));
 		webs.add(new WebVO("511", "奥迪R8"));
+		webs.add(new WebVO("812", "奥迪Q5"));
 
 		webs.add(new WebVO("162", "保时捷911"));
 		webs.add(new WebVO("703", "保时捷Panamera"));
@@ -79,6 +81,7 @@ public class Application {
 		webs.add(new WebVO("210", "大众甲壳虫"));
 		webs.add(new WebVO("669", "大众尚酷"));
 		webs.add(new WebVO("82", "大众途锐"));
+		webs.add(new WebVO("874", "大众途观"));
 
 		webs.add(new WebVO("266", "阿斯顿马丁DB9"));
 		webs.add(new WebVO("729", "阿斯顿马丁One-77"));
@@ -95,19 +98,23 @@ public class Application {
 		webs.add(new WebVO("678", "雪佛兰科迈罗Camaro"));
 	}
 
-	static {
-		context = new ClassPathXmlApplicationContext("classpath:applicationContext*.xml");
-		photoService = context.getBean(PhotoService.class);
+	@Autowired
+	private PhotoService photoService;
+
+	@Override
+	public void run(String... args) throws Exception {
+		if (photoService.count() == 0) {
+			ExecutorService service = Executors.newCachedThreadPool();
+			BlockingQueue<File> queue = new ArrayBlockingQueue<File>(ParseConstants.QUEUE_SIZE);
+			List<List<WebVO>> splitList = ListUtils.partition(webs, ParseConstants.PARSE_LIST_SIZE);
+			for (List<WebVO> subList : splitList) {
+				service.execute(new ParsePhoto(subList, queue));
+				service.execute(new ImportPhoto(queue, photoService));
+			}
+			service.shutdown();
+		} else {
+			System.out.println("MongoDB In The Presence Of Pictures, Skip Parse...");
+		}
 	}
 
-	public static void main(String[] args) {
-		ExecutorService service = newCachedThreadPool();
-		BlockingQueue<File> queue = new ArrayBlockingQueue<File>(ParseConstants.QUEUE_SIZE);
-		List<List<WebVO>> splitList = ListUtils.partition(webs, ParseConstants.PARSE_LIST_SIZE);
-		for (List<WebVO> subList : splitList) {
-			service.execute(new ParsePhoto(subList, queue));
-			service.execute(new ImportPhoto(queue, photoService));
-		}
-		service.shutdown();
-	}
 }

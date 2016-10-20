@@ -73,7 +73,7 @@ public class ParsePhoto implements Runnable {
 						e.printStackTrace();
 					}
 					queue.offer(out);
-					System.out.println("disk: " + out);
+					System.out.println("Store To Disk: " + out);
 				}
 			}
 		}

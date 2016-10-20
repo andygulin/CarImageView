@@ -1,7 +1,5 @@
 # 抓取图片入库到mongodb，通过nginx-gridfs访问图片
 
-============
-
 ## 下载 nginx-gridfs
 	yum install git
 	git clone https://github.com/mdirolf/nginx-gridfs.git
@@ -22,4 +20,10 @@
 		type=objectid;
 		mongo 127.0.0.1:27017;
 	}
+
+## 运行
+	nginx.mongo.photo.view.Application
+
+## 访问
+	(http://localhost:8080/view)[http://localhost:8080/view]
 
