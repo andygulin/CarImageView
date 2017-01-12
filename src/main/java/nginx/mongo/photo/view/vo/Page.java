@@ -1,9 +1,9 @@
 package nginx.mongo.photo.view.vo;
 
+import org.springframework.util.CollectionUtils;
+
 import java.io.Serializable;
 import java.util.List;
-
-import org.springframework.util.CollectionUtils;
 
 public class Page<T> implements Serializable {
 
@@ -18,19 +18,19 @@ public class Page<T> implements Serializable {
 	private long totalSize;
 
 	public static final <T> Page<T> build(List<T> result, Class<T> clazz, int pageNo, int pageSize, long totalSize) {
-		return new Page<T>(result, totalSize, pageNo, pageSize);
+		return new Page<>(result, totalSize, pageNo, pageSize);
 	}
 
 	public static final <T> Page<T> build(List<T> result, int pageNo, int pageSize, long totalSize) {
-		return new Page<T>(result, totalSize, pageNo, pageSize);
+		return new Page<>(result, totalSize, pageNo, pageSize);
 	}
 
 	public static final <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize) {
-		return new Page<T>(result, totalSize, DEFAULT_PAGE_NO, DEFAULT_PAGE_SIZE);
+		return new Page<>(result, totalSize, DEFAULT_PAGE_NO, DEFAULT_PAGE_SIZE);
 	}
 
 	public static final <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize, int pageNo) {
-		return new Page<T>(result, totalSize, pageNo, DEFAULT_PAGE_SIZE);
+		return new Page<>(result, totalSize, pageNo, DEFAULT_PAGE_SIZE);
 	}
 
 	public Page(List<T> result, long totalSize, int pageNo, int pageSize) {

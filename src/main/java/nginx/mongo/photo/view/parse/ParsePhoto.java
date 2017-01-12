@@ -1,9 +1,9 @@
 package nginx.mongo.photo.view.parse;
 
-import static com.alibaba.fastjson.JSON.toJSONString;
-import static org.apache.commons.io.FileUtils.copyURLToFile;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.commons.io.IOUtils.DIR_SEPARATOR;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import static com.alibaba.fastjson.JSON.toJSONString;
+import static org.apache.commons.io.FileUtils.copyURLToFile;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.commons.io.IOUtils.DIR_SEPARATOR;
 
 public class ParsePhoto implements Runnable {
 
@@ -31,14 +31,14 @@ public class ParsePhoto implements Runnable {
 
 	@Override
 	public void run() {
-		String url = null;
-		String carId = "";
-		String name = "";
-		File out = null;
+		String url;
+		String carId;
+		String name;
+		File out;
 		Document doc = null;
 		URL imageURL = null;
-		File remarkFile = null;
-		Map<String, String> remarkMap = null;
+		File remarkFile;
+		Map<String, String> remarkMap;
 		for (WebVO webVO : webs) {
 			carId = webVO.getCatId();
 			name = webVO.getName();

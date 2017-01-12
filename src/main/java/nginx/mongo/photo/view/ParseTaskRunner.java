@@ -1,5 +1,14 @@
 package nginx.mongo.photo.view;
 
+import nginx.mongo.photo.view.parse.ImportPhoto;
+import nginx.mongo.photo.view.parse.ParseConstants;
+import nginx.mongo.photo.view.parse.ParsePhoto;
+import nginx.mongo.photo.view.parse.WebVO;
+import nginx.mongo.photo.view.service.PhotoService;
+import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,16 +16,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.apache.commons.collections4.ListUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-
-import nginx.mongo.photo.view.parse.ImportPhoto;
-import nginx.mongo.photo.view.parse.ParseConstants;
-import nginx.mongo.photo.view.parse.ParsePhoto;
-import nginx.mongo.photo.view.parse.WebVO;
-import nginx.mongo.photo.view.service.PhotoService;
 
 public class ParseTaskRunner implements CommandLineRunner {
 
@@ -105,7 +104,7 @@ public class ParseTaskRunner implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		if (photoService.count() == 0) {
 			ExecutorService service = Executors.newCachedThreadPool();
-			BlockingQueue<File> queue = new ArrayBlockingQueue<File>(ParseConstants.QUEUE_SIZE);
+			BlockingQueue<File> queue = new ArrayBlockingQueue<>(ParseConstants.QUEUE_SIZE);
 			List<List<WebVO>> splitList = ListUtils.partition(webs, ParseConstants.PARSE_LIST_SIZE);
 			for (List<WebVO> subList : splitList) {
 				service.execute(new ParsePhoto(subList, queue));
