@@ -12,11 +12,11 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Configuration
 public class MongoConfig {
 
-	@Bean
-	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context) {
-		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
-		MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, context);
-		converter.setTypeMapper(new DefaultMongoTypeMapper(null));
-		return converter;
-	}
+    @Bean
+    public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context) {
+        DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
+        MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, context);
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+        return converter;
+    }
 }

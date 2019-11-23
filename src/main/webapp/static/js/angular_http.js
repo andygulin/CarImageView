@@ -1,9 +1,9 @@
-var customHttpProvider = function($httpProvider) {
+var customHttpProvider = function ($httpProvider) {
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
     $httpProvider.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest';
 
-    $httpProvider.defaults.transformRequest = [function(data) {
-        var param = function(obj) {
+    $httpProvider.defaults.transformRequest = [function (data) {
+        var param = function (obj) {
             var query = '';
             var name, value, fullSubName, subName, subValue, innerObj, i;
 
