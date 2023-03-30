@@ -1,22 +1,38 @@
 package nginx.mongo.photo.view.controller;
 
+import com.mongodb.client.gridfs.model.GridFSFile;
 import nginx.mongo.photo.view.service.PhotoService;
 import nginx.mongo.photo.view.vo.Page;
 import nginx.mongo.photo.view.vo.PhotoVO;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @Controller
 public class PhotoController {
 
-    @Autowired
-    private PhotoService photoService;
+    private final PhotoService photoService;
+    private final GridFsTemplate gridFsTemplate;
 
-    @GetMapping("/view")
-    public String view() {
-        return "view";
+    public PhotoController(PhotoService photoService, GridFsTemplate gridFsTemplate) {
+        this.photoService = photoService;
+        this.gridFsTemplate = gridFsTemplate;
+    }
+
+    @GetMapping("/")
+    public String index() {
+        return "index";
     }
 
     @ResponseBody
@@ -32,5 +48,17 @@ public class PhotoController {
     @PostMapping("/get/{id}")
     public PhotoVO get(@PathVariable("id") String id) {
         return photoService.findById(id);
+    }
+
+    @ResponseBody
+    @GetMapping("/image/{fileId}")
+    public ResponseEntity<byte[]> image(@PathVariable("fileId") String fileId) throws IOException {
+        GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(fileId)));
+        GridFsResource gridFsResource = gridFsTemplate.getResource(gridFSFile);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        byte[] bytes = IOUtils.toByteArray(gridFsResource.getInputStream());
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 }

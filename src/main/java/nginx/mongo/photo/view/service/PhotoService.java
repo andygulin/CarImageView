@@ -10,7 +10,7 @@ public interface PhotoService {
 
     Page<PhotoVO> findByPage(String keywords, int pageNo, int pageSize);
 
-    String insert(Photo photo);
+    void insert(Photo photo);
 
     String store(File file);
 

@@ -17,19 +17,19 @@ public class Page<T> implements Serializable {
     private List<T> result;
     private long totalSize;
 
-    public static final <T> Page<T> build(List<T> result, Class<T> clazz, int pageNo, int pageSize, long totalSize) {
+    public static <T> Page<T> build(List<T> result, Class<T> clazz, int pageNo, int pageSize, long totalSize) {
         return new Page<>(result, totalSize, pageNo, pageSize);
     }
 
-    public static final <T> Page<T> build(List<T> result, int pageNo, int pageSize, long totalSize) {
+    public static <T> Page<T> build(List<T> result, int pageNo, int pageSize, long totalSize) {
         return new Page<>(result, totalSize, pageNo, pageSize);
     }
 
-    public static final <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize) {
+    public static <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize) {
         return new Page<>(result, totalSize, DEFAULT_PAGE_NO, DEFAULT_PAGE_SIZE);
     }
 
-    public static final <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize, int pageNo) {
+    public static <T> Page<T> build(List<T> result, Class<T> clazz, long totalSize, int pageNo) {
         return new Page<>(result, totalSize, pageNo, DEFAULT_PAGE_SIZE);
     }
 

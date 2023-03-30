@@ -7,8 +7,6 @@ import nginx.mongo.photo.view.vo.Page;
 import nginx.mongo.photo.view.vo.PhotoVO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,20 +20,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
 public class PhotoServiceImpl implements PhotoService {
 
-    @Autowired
-    private PhotoRepository photoRepository;
-    @Autowired
-    private MongoTemplate mongoTemplate;
-    @Autowired
-    private GridFsTemplate gridFsTemplate;
+    private final PhotoRepository photoRepository;
+    private final MongoTemplate mongoTemplate;
+    private final GridFsTemplate gridFsTemplate;
 
-    @Value("${image.domain}")
-    private String imageDomain;
+    public PhotoServiceImpl(PhotoRepository photoRepository, MongoTemplate mongoTemplate, GridFsTemplate gridFsTemplate) {
+        this.photoRepository = photoRepository;
+        this.mongoTemplate = mongoTemplate;
+        this.gridFsTemplate = gridFsTemplate;
+    }
 
     @Override
     public Page<PhotoVO> findByPage(String keywords, int pageNo, int pageSize) {
@@ -61,19 +60,20 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public String insert(Photo photo) {
-        return photoRepository.save(photo).getId();
+    public void insert(Photo photo) {
+        photoRepository.save(photo);
     }
 
     @Override
     public String store(File file) {
-        InputStream is = null;
+        InputStream is;
         try {
             is = FileUtils.openInputStream(file);
+            return gridFsTemplate.store(is, file.getName()).toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return gridFsTemplate.store(is, file.getName()).toString();
+        return null;
     }
 
     private PhotoVO convertVO(Photo photo) {
@@ -81,15 +81,18 @@ public class PhotoServiceImpl implements PhotoService {
         photoVO.setId(photo.getId());
         photoVO.setName(photo.getName());
         photoVO.setCreateAt(photo.getCreateAt());
-        photoVO.setRemark(photo.getRemark());
-        photoVO.setPath(imageDomain + photo.getFileId());
+        photoVO.setTitle(photo.getTitle());
+        photoVO.setThumbnailFileId(photo.getThumbnailFileId());
+        photoVO.setThumbnailUrl("/image/" + photo.getThumbnailFileId());
+        photoVO.setOriginalFileId(photo.getOriginalFileId());
+        photoVO.setOriginalUrl("/image/" + photo.getOriginalFileId());
         return photoVO;
     }
 
     @Override
     public PhotoVO findById(String id) {
-        Photo photo = photoRepository.findById(id).get();
-        return convertVO(photo);
+        Optional<Photo> optional = photoRepository.findById(id);
+        return optional.map(this::convertVO).orElse(null);
     }
 
     @Override

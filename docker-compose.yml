@@ -1,0 +1,20 @@
+version: "3"
+services:
+  nginx-mongo-photo-view-service:
+    image: nginx-mongo-photo-view
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    links:
+      - nginx-mongo-photo-view-mongo
+    depends_on:
+      - nginx-mongo-photo-view-mongo
+
+  nginx-mongo-photo-view-mongo:
+    image: mongo:4.4.19
+    ports:
+      - "27017:27017"
+
+

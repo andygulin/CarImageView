@@ -10,12 +10,6 @@ public class ParseConstants {
 
     public static final String IMAGE_PATH = FileUtils.getTempDirectoryPath();
 
-    public static final String REMARK_FILE_EXT = ".remark";
-
-    public static final String FILE_ENCODING = "UTF-8";
-
-    public static final int DEFAULT_PAGE_SIZE = 1;
-
     public static final int TIMEOUT = Integer.MAX_VALUE;
 
     public static final long WAIT_TIME = 30L;
@@ -23,5 +17,4 @@ public class ParseConstants {
 
     public static final int QUEUE_SIZE = 100;
     public static final int PARSE_LIST_SIZE = 4;
-
 }

@@ -1,18 +1,31 @@
 spring:
-  http:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-  data:
-    mongodb:
-      database: photo
-      host: 192.168.209.128
-      port: 27017
-      repositories.enabled: true
+  profiles:
+    active: dev
   mvc:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
-image:
-  domain: http://192.168.209.128/image/
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+---
+#dev
+spring:
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27018/photo
+  config:
+    activate:
+      on-profile: dev
+---
+#docker
+spring:
+  data:
+    mongodb:
+      uri: mongodb://nginx-mongo-photo-view-mongo:27017/photo
+  config:
+    activate:
+      on-profile: docker

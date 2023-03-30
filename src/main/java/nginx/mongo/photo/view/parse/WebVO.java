@@ -12,15 +12,15 @@ import java.io.Serializable;
 public class WebVO implements Serializable {
 
     private static final long serialVersionUID = -156412151810316987L;
-    private String catId;
+    private Integer catId;
     private String name;
+    private String url;
 
-    private final String CAR_PHOTO_URL = "http://car.autohome.com.cn/photolist/series/%s/";
-
-    public WebVO(String catId, String name) {
+    public WebVO(Integer catId, String name) {
         super();
-        this.catId = String.format(CAR_PHOTO_URL, catId);
+        this.catId = catId;
         this.name = name;
+        this.url = String.format("https://car.autohome.com.cn/pic/series/%d.html", catId);
     }
 
 }
