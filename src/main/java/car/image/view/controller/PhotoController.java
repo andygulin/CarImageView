@@ -30,11 +30,6 @@ public class PhotoController {
         this.gridFsTemplate = gridFsTemplate;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
-
     @ResponseBody
     @PostMapping("/query")
     public Page<PhotoVO> query(
