@@ -1,0 +1,20 @@
+version: "3"
+services:
+  car-image-view-service:
+    image: car-image-view
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    links:
+      - car-image-view-mongo
+    depends_on:
+      - car-image-view-mongo
+
+  car-image-view-mongo:
+    image: mongo:4.4.19
+    ports:
+      - "27017:27017"
+
+
