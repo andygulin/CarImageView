@@ -15,7 +15,7 @@ spring:
 spring:
   data:
     mongodb:
-      uri: mongodb://nginx-mongo-photo-view-mongo:27017/photo
+      uri: mongodb://car-image-view-mongo:27017/photo
   config:
     activate:
       on-profile: docker
