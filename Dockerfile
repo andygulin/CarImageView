@@ -11,6 +11,7 @@ RUN mvn clean package
 FROM openjdk:8-jdk-slim
 
 COPY --from=builder /usr/src/target/CarImageView-1.0.jar /app/app.jar
+COPY --from=builder /usr/src/car.json /app/car.json
 
 EXPOSE 8080
 

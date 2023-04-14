@@ -10,6 +10,9 @@ spring:
   config:
     activate:
       on-profile: dev
+parse:
+  file:
+    location: car.json
 ---
 #docker
 spring:
@@ -19,3 +22,6 @@ spring:
   config:
     activate:
       on-profile: docker
+parse:
+  file:
+    location: /app/car.json

@@ -1,5 +1,6 @@
 package car.image.view;
 
+import car.image.view.parse.ParseTaskRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
