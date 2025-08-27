@@ -1,20 +1,63 @@
-version: "3"
 services:
   car-image-view-service:
-    image: car-image-view
+    image: car-image-view:1.0
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: car-image-view-service
+    restart: unless-stopped
     ports:
       - "8080:8080"
-    links:
-      - car-image-view-mongo
+    environment:
+      - TZ=UTC
+      - JAVA_OPTS=-Xms256m -Xmx512m
     depends_on:
-      - car-image-view-mongo
+      car-image-view-mongo:
+        condition: service_healthy
+    networks:
+      - car-image-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 768m
 
   car-image-view-mongo:
     image: mongo:4.4.19
+    container_name: car-image-view-mongo
+    restart: unless-stopped
     ports:
       - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    environment:
+      - MONGO_INITDB_DATABASE=photo
+      - TZ=UTC
+    networks:
+      - car-image-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512m
 
 
+networks:
+  car-image-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  mongo-config:
